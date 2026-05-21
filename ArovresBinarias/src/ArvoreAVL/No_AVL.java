@@ -3,12 +3,12 @@ package ArvoreAVL;
 public class No_AVL {
     int valor;
     No_AVL esquerda;
-    No_AVL direito;
+    No_AVL direita;
     int altura;
 
     public int Obter_altura(No_AVL noAvl){
         if (noAvl == null){
-            return -1;
+            return 0;
         }
         return noAvl.altura;
     }
@@ -16,13 +16,13 @@ public class No_AVL {
         if (noAvl == null){
             return 0;
         }
-        return Obter_altura(noAvl.esquerda) - Obter_altura(noAvl.direito);
+        return Obter_altura(noAvl.esquerda) - Obter_altura(noAvl.direita);
     }
 
     public No_AVL(int valor) {
         this.valor = valor;
         this.esquerda = null;
-        this.direito = null;
+        this.direita = null;
         this.altura = 1;
     }
 
@@ -43,11 +43,11 @@ public class No_AVL {
     }
 
     public No_AVL getDireito() {
-        return direito;
+        return direita;
     }
 
     public void setDireito(No_AVL direito) {
-        this.direito = direito;
+        this.direita = direito;
     }
 
     public int getAltura() {
