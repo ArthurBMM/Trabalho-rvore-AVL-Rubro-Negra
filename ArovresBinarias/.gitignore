@@ -1,0 +1,34 @@
+# Arquivos compilados
+*.class
+target/
+out/
+
+# Arquivos do IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea/workspace.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+
+# Arquivos do Eclipse (se tiver)
+.settings/
+.project
+.classpath
+
+# Arquivos do NetBeans
+nbproject/
+nb-configuration.xml
+
+# Logs
+*.log
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos de build
+build/
+dist/
