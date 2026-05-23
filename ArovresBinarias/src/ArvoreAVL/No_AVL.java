@@ -1,10 +1,10 @@
 package ArvoreAVL;
 
 public class No_AVL {
-    int valor;
-    No_AVL esquerda;
-    No_AVL direita;
-    int altura;
+    private int valor;
+    private No_AVL esquerda;
+    private No_AVL direita;
+    private int altura;
 
     public int Obter_altura(No_AVL noAvl){
         if (noAvl == null){
@@ -42,11 +42,11 @@ public class No_AVL {
         this.esquerda = esquerda;
     }
 
-    public No_AVL getDireito() {
+    public No_AVL getDireita() {
         return direita;
     }
 
-    public void setDireito(No_AVL direito) {
+    public void setDireita(No_AVL direito) {
         this.direita = direito;
     }
 
