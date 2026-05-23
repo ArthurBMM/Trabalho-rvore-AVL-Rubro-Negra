@@ -39,6 +39,16 @@ public class StressTest {
         return fim - inicio;
     }
 
+    // Mede o tempo total de busca de um array inteiro na arvore AVL
+    private static long medirBusca(Arvore_AVL arvore, int[] dados) {
+        long inicio = System.nanoTime();
+        for (int v : dados) {
+            arvore.buscar(v);
+        }
+        long fim = System.nanoTime();
+        return fim - inicio;
+    }
+
     // Ponto de entrada
     public static void main(String[] args ) {
             // testes serão chamados aqui nos próximos commits
