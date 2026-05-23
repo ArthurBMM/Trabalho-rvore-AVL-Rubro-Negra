@@ -60,9 +60,19 @@ public class StressTest {
         return fim - inicio;
     }
 
+    // Imprime os resultados em formato de tabela comparativa
+    private static void imprimirResultados(String nomeEstrutura, int volume,
+                                           long tempoInsercao, long tempoBusca,
+                                           long tempoRemocao) {
+        System.out.printf("%-15s | %-10d | %-20d | %-20d | %-20d%n",
+                nomeEstrutura, volume, tempoInsercao, tempoBusca, tempoRemocao);
+    }
+
     // Ponto de entrada
-    public static void main(String[] args ) {
-            // testes serão chamados aqui nos próximos commits
+    public static void main(String[] args) {
+        System.out.printf("%-15s | %-10s | %-20s | %-20s | %-20s%n",
+                "Estrutura", "Volume", "Insercao (ns)", "Busca (ns)", "Remocao (ns)");
+        System.out.println("-".repeat(95));
     }
 }
 
