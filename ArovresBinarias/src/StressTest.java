@@ -73,6 +73,27 @@ public class StressTest {
         System.out.printf("%-15s | %-10s | %-20s | %-20s | %-20s%n",
                 "Estrutura", "Volume", "Insercao (ns)", "Busca (ns)", "Remocao (ns)");
         System.out.println("-".repeat(95));
+
+        for (int volume : VOLUMES) {
+            int[] dadosAleatorios = gerarDadosAleatorios(volume);
+            int[] dadosOrdenados = gerarDadosOrdenados(volume);
+
+            // Teste com dados aleatorios
+            Arvore_AVL avlAleatorio = new Arvore_AVL();
+            long insercao = medirInsercao(avlAleatorio, dadosAleatorios);
+            long busca    = medirBusca(avlAleatorio, dadosAleatorios);
+            long remocao  = medirRemocao(avlAleatorio, dadosAleatorios);
+            imprimirResultados("AVL Aleatorio", volume, insercao, busca, remocao);
+
+            // Testes com dados Ordenados (pior caso)
+            Arvore_AVL avlOrdenado = new Arvore_AVL();
+            long insercaoOrd       = medirInsercao(avlOrdenado, dadosOrdenados);
+            long buscaOrd    = medirBusca(avlOrdenado, dadosOrdenados);
+            long remocaoOrd  = medirRemocao(avlOrdenado, dadosOrdenados);
+            imprimirResultados("AVL Ordenado", volume, insercaoOrd, buscaOrd, remocaoOrd);
+
+            System.out.println();
+        }
     }
 }
 
