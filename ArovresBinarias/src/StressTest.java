@@ -49,6 +49,17 @@ public class StressTest {
         return fim - inicio;
     }
 
+    // Mede o tempo de remoção de 20% dos nós da árvore AVL
+    private static long medirRemocao(Arvore_AVL arvore, int[] dados) {
+        int qtdRemover = dados.length / 5; // 20%
+        long inicio = System.nanoTime();
+        for (int i = 0; i < qtdRemover; i++) {
+            arvore.remover(dados[i]);
+        }
+        long fim = System.nanoTime();
+        return fim - inicio;
+    }
+
     // Ponto de entrada
     public static void main(String[] args ) {
             // testes serão chamados aqui nos próximos commits
