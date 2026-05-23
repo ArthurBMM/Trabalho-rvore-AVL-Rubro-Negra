@@ -29,6 +29,16 @@ public class StressTest {
         return dados;
     }
 
+    // Mede o tempo total de inserção de um array inteiro na arvore AVL
+    private static long medirInsercao(Arvore_AVL arvore, int[] dados){
+        long inicio = System.nanoTime();
+        for (int v : dados) {
+            arvore.inserir(v);
+        }
+        long fim = System.nanoTime();
+        return fim - inicio;
+    }
+
     // Ponto de entrada
     public static void main(String[] args ) {
             // testes serão chamados aqui nos próximos commits
