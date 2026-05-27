@@ -119,6 +119,144 @@ public class Arvore_RubroNegra {
         raiz.cor = No_RubroNegro.PRETO; // garante raiz preta
     }
 
+    // ---------- BUSCA ----------
+    public No_RubroNegro buscar(int valor) {
+        return buscar(raiz, valor);
+    }
 
+    private No_RubroNegro buscar(No_RubroNegro no, int valor) {
+        if (no == nil || no.valor == valor) return no;
+        if (valor < no.valor) return buscar(no.esquerda, valor);
+        return buscar(no.direita, valor);
+    }
 
+    // ---------- REMOÇÃO ----------
+    public void remover(int valor) {
+        No_RubroNegro z = buscar(raiz, valor);
+        if (z == nil) return; // valor não encontrado
+        remover(z);
+    }
+
+    private void remover(No_RubroNegro z) {
+        No_RubroNegro y = z;
+        No_RubroNegro x;
+        boolean corOriginalY = y.cor;
+
+        if (z.esquerda == nil) {
+            // Caso 1: sem filho esquerdo
+            x = z.direita;
+            transplantar(z, z.direita);
+        } else if (z.direita == nil) {
+            // Caso 2: sem filho direito
+            x = z.esquerda;
+            transplantar(z, z.esquerda);
+        } else {
+            // Caso 3: dois filhos — substitui pelo sucessor (mínimo da subárvore direita)
+            y = minimo(z.direita);
+            corOriginalY = y.cor;
+            x = y.direita;
+            if (y.pai == z) {
+                x.pai = y;
+            } else {
+                transplantar(y, y.direita);
+                y.direita = z.direita;
+                y.direita.pai = y;
+            }
+            transplantar(z, y);
+            y.esquerda = z.esquerda;
+            y.esquerda.pai = y;
+            y.cor = z.cor;
+        }
+        // Se a cor removida era preta, pode ter violado as propriedades
+        if (corOriginalY == No_RubroNegro.PRETO) {
+            removerFixup(x);
+        }
+    }
+
+    // Substitui a subárvore de u pela subárvore de v
+    private void transplantar(No_RubroNegro u, No_RubroNegro v) {
+        if (u.pai == nil) {
+            raiz = v;
+        } else if (u == u.pai.esquerda) {
+            u.pai.esquerda = v;
+        } else {
+            u.pai.direita = v;
+        }
+        v.pai = u.pai;
+    }
+
+    // Retorna o nó de menor valor a partir de um nó
+    private No_RubroNegro minimo(No_RubroNegro no) {
+        while (no.esquerda != nil) {
+            no = no.esquerda;
+        }
+        return no;
+    }
+
+    // ---------- CORREÇÃO DE VIOLAÇÕES DA REMOÇÃO ----------
+    private void removerFixup(No_RubroNegro x) {
+        while (x != raiz && x.cor == No_RubroNegro.PRETO) {
+            if (x == x.pai.esquerda) {
+                No_RubroNegro irmao = x.pai.direita;
+
+                // Caso 1: irmão vermelho → recolore e rotaciona
+                if (irmao.cor == No_RubroNegro.VERMELHO) {
+                    irmao.cor = No_RubroNegro.PRETO;
+                    x.pai.cor = No_RubroNegro.VERMELHO;
+                    rotacaoEsquerda(x.pai);
+                    irmao = x.pai.direita;
+                }
+
+                // Caso 2: irmão preto com filhos pretos → recolore irmão
+                if (irmao.esquerda.cor == No_RubroNegro.PRETO &&
+                        irmao.direita.cor == No_RubroNegro.PRETO) {
+                    irmao.cor = No_RubroNegro.VERMELHO;
+                    x = x.pai; // problema sobe
+                } else {
+                    // Caso 3: irmão preto, filho direito preto → rotaciona irmão
+                    if (irmao.direita.cor == No_RubroNegro.PRETO) {
+                        irmao.esquerda.cor = No_RubroNegro.PRETO;
+                        irmao.cor = No_RubroNegro.VERMELHO;
+                        rotacaoDireita(irmao);
+                        irmao = x.pai.direita;
+                    }
+                    // Caso 4: irmão preto, filho direito vermelho → rotaciona pai
+                    irmao.cor = x.pai.cor;
+                    x.pai.cor = No_RubroNegro.PRETO;
+                    irmao.direita.cor = No_RubroNegro.PRETO;
+                    rotacaoEsquerda(x.pai);
+                    x = raiz; // encerra o loop
+                }
+            } else {
+                // Lógica simétrica (x é filho direito)
+                No_RubroNegro irmao = x.pai.esquerda;
+
+                if (irmao.cor == No_RubroNegro.VERMELHO) {
+                    irmao.cor = No_RubroNegro.PRETO;
+                    x.pai.cor = No_RubroNegro.VERMELHO;
+                    rotacaoDireita(x.pai);
+                    irmao = x.pai.esquerda;
+                }
+
+                if (irmao.direita.cor == No_RubroNegro.PRETO &&
+                        irmao.esquerda.cor == No_RubroNegro.PRETO) {
+                    irmao.cor = No_RubroNegro.VERMELHO;
+                    x = x.pai;
+                } else {
+                    if (irmao.esquerda.cor == No_RubroNegro.PRETO) {
+                        irmao.direita.cor = No_RubroNegro.PRETO;
+                        irmao.cor = No_RubroNegro.VERMELHO;
+                        rotacaoEsquerda(irmao);
+                        irmao = x.pai.esquerda;
+                    }
+                    irmao.cor = x.pai.cor;
+                    x.pai.cor = No_RubroNegro.PRETO;
+                    irmao.esquerda.cor = No_RubroNegro.PRETO;
+                    rotacaoDireita(x.pai);
+                    x = raiz;
+                }
+            }
+        }
+        x.cor = No_RubroNegro.PRETO; // garante que a raiz (ou x) fique preta
+    }
 }
