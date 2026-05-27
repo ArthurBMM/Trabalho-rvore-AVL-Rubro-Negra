@@ -68,8 +68,18 @@ public class StressTest {
                 nomeEstrutura, volume, tempoInsercao, tempoBusca, tempoRemocao);
     }
 
+    // Aquecimento da JVM (não entra na medição)
+    private static void aquecer() {
+        Arvore_AVL avl = new Arvore_AVL();
+        int[] warmup = gerarDadosAleatorios(1_000);
+        medirInsercao(avl, warmup);
+        medirBusca(avl, warmup);
+        medirRemocao(avl, warmup);
+    }
+
     // Ponto de entrada
     public static void main(String[] args) {
+        aquecer();
         System.out.printf("%-15s | %-10s | %-20s | %-20s | %-20s%n",
                 "Estrutura", "Volume", "Insercao (ns)", "Busca (ns)", "Remocao (ns)");
         System.out.println("-".repeat(95));
