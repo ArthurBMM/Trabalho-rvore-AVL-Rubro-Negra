@@ -6,257 +6,256 @@ public class Arvore_RubroNegra {
 
     public Arvore_RubroNegra() {
         nil = new No_RubroNegro(0);
-        nil.cor = No_RubroNegro.PRETO;
+        nil.setCor(No_RubroNegro.PRETO);
         raiz = nil;
     }
 
-    // ---------- ROTAÇÕES ----------
-    private void rotacaoEsquerda(No_RubroNegro x) {
-        No_RubroNegro y = x.direita;
-        x.direita = y.esquerda;
-        if (y.esquerda != nil) {
-            y.esquerda.pai = x;
+    // Rotação simples à esquerda — filho direito (auxiliar) sobe, nó atual desce para a esquerda
+    private void Rotacao_Simples_Esquerda(No_RubroNegro no) {
+        No_RubroNegro auxiliar = no.getDireita();
+        no.setDireita(auxiliar.getEsquerda());
+        if (auxiliar.getEsquerda() != nil) {
+            auxiliar.getEsquerda().setPai(no);
         }
-        y.pai = x.pai;
-        if (x.pai == nil) {
-            raiz = y;
-        } else if (x == x.pai.esquerda) {
-            x.pai.esquerda = y;
+        auxiliar.setPai(no.getPai());
+        if (no.getPai() == nil) {
+            raiz = auxiliar;
+        } else if (no == no.getPai().getEsquerda()) {
+            no.getPai().setEsquerda(auxiliar);
         } else {
-            x.pai.direita = y;
+            no.getPai().setDireita(auxiliar);
         }
-        y.esquerda = x;
-        x.pai = y;
-    }
-    private void rotacaoDireita(No_RubroNegro x) { // espelho da esquerda
-        No_RubroNegro y = x.esquerda;
-        x.esquerda = y.direita;
-        if (y.direita != nil) {
-            y.direita.pai = x;
-        }
-        y.pai = x.pai;
-        if (x.pai == nil) {
-            raiz = y;
-        } else if (x == x.pai.direita) {
-            x.pai.direita = y;
-        } else {
-            x.pai.esquerda = y;
-        }
-        y.direita = x;
-        x.pai = y;
+        auxiliar.setEsquerda(no);
+        no.setPai(auxiliar);
     }
 
-    // ---------- INSERÇÃO ----------
+    // Rotação simples à direita — filho esquerdo (auxiliar) sobe, nó atual desce para a direita
+    private void Rotacao_Simples_Direita(No_RubroNegro no) {
+        No_RubroNegro auxiliar = no.getEsquerda();
+        no.setEsquerda(auxiliar.getDireita());
+        if (auxiliar.getDireita() != nil) {
+            auxiliar.getDireita().setPai(no);
+        }
+        auxiliar.setPai(no.getPai());
+        if (no.getPai() == nil) {
+            raiz = auxiliar;
+        } else if (no == no.getPai().getDireita()) {
+            no.getPai().setDireita(auxiliar);
+        } else {
+            no.getPai().setEsquerda(auxiliar);
+        }
+        auxiliar.setDireita(no);
+        no.setPai(auxiliar);
+    }
+
+    // Inserção iterativa como BST e correção das violações rubro-negras
     public void inserir(int valor) {
-        No_RubroNegro z = new No_RubroNegro(valor);
-        z.esquerda = nil;
-        z.direita = nil;
+        No_RubroNegro no_novo = new No_RubroNegro(valor);
+        no_novo.setEsquerda(nil);
+        no_novo.setDireita(nil);
 
-        No_RubroNegro y = nil;
-        No_RubroNegro x = raiz;
+        No_RubroNegro pai = nil;
+        No_RubroNegro atual = raiz;
 
         // Desce como numa BST normal
-        while (x != nil) {
-            y = x;
-            if (z.valor < x.valor) {
-                x = x.esquerda;
+        while (atual != nil) {
+            pai = atual;
+            if (no_novo.getValor() < atual.getValor()) {
+                atual = atual.getEsquerda();
             } else {
-                x = x.direita;
+                atual = atual.getDireita();
             }
         }
-        z.pai = y;
-        if (y == nil) {
-            raiz = z;            // árvore estava vazia
-        } else if (z.valor < y.valor) {
-            y.esquerda = z;
+        no_novo.setPai(pai);
+        if (pai == nil) {
+            raiz = no_novo;                         // árvore estava vazia
+        } else if (no_novo.getValor() < pai.getValor()) {
+            pai.setEsquerda(no_novo);
         } else {
-            y.direita = z;
+            pai.setDireita(no_novo);
         }
-        inserirFixup(z); // corrige as violações
+        Inserir_Fixup(no_novo);                     // corrige as violações
     }
 
-    // ---------- CORREÇÃO DE VIOLAÇÕES NA INSERÇÃO ----------
-    private void inserirFixup(No_RubroNegro z) {
-        while (z.pai.cor == No_RubroNegro.VERMELHO) {
-            if (z.pai == z.pai.pai.esquerda) {
-                No_RubroNegro tio = z.pai.pai.direita;
-                if (tio.cor == No_RubroNegro.VERMELHO) {
+    // Corrige violações das propriedades rubro-negras após inserção
+    private void Inserir_Fixup(No_RubroNegro no) {
+        while (no.getPai().getCor() == No_RubroNegro.VERMELHO) {
+            if (no.getPai() == no.getPai().getPai().getEsquerda()) {
+                No_RubroNegro tio = no.getPai().getPai().getDireita();
+                if (tio.getCor() == No_RubroNegro.VERMELHO) {
                     // Caso 1: tio vermelho → recoloração
-                    z.pai.cor = No_RubroNegro.PRETO;
-                    tio.cor = No_RubroNegro.PRETO;
-                    z.pai.pai.cor = No_RubroNegro.VERMELHO;
-                    z = z.pai.pai; // problema sobe para o avô
+                    no.getPai().setCor(No_RubroNegro.PRETO);
+                    tio.setCor(No_RubroNegro.PRETO);
+                    no.getPai().getPai().setCor(No_RubroNegro.VERMELHO);
+                    no = no.getPai().getPai();      // problema sobe para o avô
                 } else {
-                    if (z == z.pai.direita) {
+                    if (no == no.getPai().getDireita()) {
                         // Caso 2: triângulo → rotaciona o pai
-                        z = z.pai;
-                        rotacaoEsquerda(z);
+                        no = no.getPai();
+                        Rotacao_Simples_Esquerda(no);
                     }
                     // Caso 3: reta → rotaciona o avô + recolore
-                    z.pai.cor = No_RubroNegro.PRETO;
-                    z.pai.pai.cor = No_RubroNegro.VERMELHO;
-                    rotacaoDireita(z.pai.pai);
+                    no.getPai().setCor(No_RubroNegro.PRETO);
+                    no.getPai().getPai().setCor(No_RubroNegro.VERMELHO);
+                    Rotacao_Simples_Direita(no.getPai().getPai());
                 }
             } else {
                 // Lógica simétrica (pai é filho direito do avô)
-                No_RubroNegro tio = z.pai.pai.esquerda;
-                if (tio.cor == No_RubroNegro.VERMELHO) {
-                    z.pai.cor = No_RubroNegro.PRETO;
-                    tio.cor = No_RubroNegro.PRETO;
-                    z.pai.pai.cor = No_RubroNegro.VERMELHO;
-                    z = z.pai.pai;
+                No_RubroNegro tio = no.getPai().getPai().getEsquerda();
+                if (tio.getCor() == No_RubroNegro.VERMELHO) {
+                    no.getPai().setCor(No_RubroNegro.PRETO);
+                    tio.setCor(No_RubroNegro.PRETO);
+                    no.getPai().getPai().setCor(No_RubroNegro.VERMELHO);
+                    no = no.getPai().getPai();
                 } else {
-                    if (z == z.pai.esquerda) {
-                        z = z.pai;
-                        rotacaoDireita(z);
+                    if (no == no.getPai().getEsquerda()) {
+                        no = no.getPai();
+                        Rotacao_Simples_Direita(no);
                     }
-                    z.pai.cor = No_RubroNegro.PRETO;
-                    z.pai.pai.cor = No_RubroNegro.VERMELHO;
-                    rotacaoEsquerda(z.pai.pai);
+                    no.getPai().setCor(No_RubroNegro.PRETO);
+                    no.getPai().getPai().setCor(No_RubroNegro.VERMELHO);
+                    Rotacao_Simples_Esquerda(no.getPai().getPai());
                 }
             }
         }
-        raiz.cor = No_RubroNegro.PRETO; // garante raiz preta
+        raiz.setCor(No_RubroNegro.PRETO);          // garante raiz preta
     }
 
-    // ---------- BUSCA ----------
-    public No_RubroNegro buscar(int valor) {
-        return buscar(raiz, valor);
+    // Busca recursiva — retorna o nó com o valor buscado ou nil se não encontrar
+    private No_RubroNegro Buscar(No_RubroNegro no, int valor) {
+        if (no == nil || no.getValor() == valor) return no;
+        if (valor < no.getValor()) return Buscar(no.getEsquerda(), valor);
+        return Buscar(no.getDireita(), valor);
     }
 
-    private No_RubroNegro buscar(No_RubroNegro no, int valor) {
-        if (no == nil || no.valor == valor) return no;
-        if (valor < no.valor) return buscar(no.esquerda, valor);
-        return buscar(no.direita, valor);
-    }
+    // Remoção do nó com o valor informado e correção das violações rubro-negras
+    private void Remover(No_RubroNegro no) {
+        No_RubroNegro sucessor = no;
+        No_RubroNegro substituto;
+        boolean cor_original = sucessor.getCor();
 
-    // ---------- REMOÇÃO ----------
-    public void remover(int valor) {
-        No_RubroNegro z = buscar(raiz, valor);
-        if (z == nil) return; // valor não encontrado
-        remover(z);
-    }
-
-    private void remover(No_RubroNegro z) {
-        No_RubroNegro y = z;
-        No_RubroNegro x;
-        boolean corOriginalY = y.cor;
-
-        if (z.esquerda == nil) {
+        if (no.getEsquerda() == nil) {
             // Caso 1: sem filho esquerdo
-            x = z.direita;
-            transplantar(z, z.direita);
-        } else if (z.direita == nil) {
+            substituto = no.getDireita();
+            Transplantar(no, no.getDireita());
+        } else if (no.getDireita() == nil) {
             // Caso 2: sem filho direito
-            x = z.esquerda;
-            transplantar(z, z.esquerda);
+            substituto = no.getEsquerda();
+            Transplantar(no, no.getEsquerda());
         } else {
             // Caso 3: dois filhos — substitui pelo sucessor (mínimo da subárvore direita)
-            y = minimo(z.direita);
-            corOriginalY = y.cor;
-            x = y.direita;
-            if (y.pai == z) {
-                x.pai = y;
+            sucessor = Minimo(no.getDireita());
+            cor_original = sucessor.getCor();
+            substituto = sucessor.getDireita();
+            if (sucessor.getPai() == no) {
+                substituto.setPai(sucessor);
             } else {
-                transplantar(y, y.direita);
-                y.direita = z.direita;
-                y.direita.pai = y;
+                Transplantar(sucessor, sucessor.getDireita());
+                sucessor.setDireita(no.getDireita());
+                sucessor.getDireita().setPai(sucessor);
             }
-            transplantar(z, y);
-            y.esquerda = z.esquerda;
-            y.esquerda.pai = y;
-            y.cor = z.cor;
+            Transplantar(no, sucessor);
+            sucessor.setEsquerda(no.getEsquerda());
+            sucessor.getEsquerda().setPai(sucessor);
+            sucessor.setCor(no.getCor());
         }
         // Se a cor removida era preta, pode ter violado as propriedades
-        if (corOriginalY == No_RubroNegro.PRETO) {
-            removerFixup(x);
+        if (cor_original == No_RubroNegro.PRETO) {
+            Remover_Fixup(substituto);
         }
     }
 
-    // Substitui a subárvore de u pela subárvore de v
-    private void transplantar(No_RubroNegro u, No_RubroNegro v) {
-        if (u.pai == nil) {
-            raiz = v;
-        } else if (u == u.pai.esquerda) {
-            u.pai.esquerda = v;
+    // Substitui a subárvore de no_removido pela subárvore de substituto
+    private void Transplantar(No_RubroNegro no_removido, No_RubroNegro substituto) {
+        if (no_removido.getPai() == nil) {
+            raiz = substituto;
+        } else if (no_removido == no_removido.getPai().getEsquerda()) {
+            no_removido.getPai().setEsquerda(substituto);
         } else {
-            u.pai.direita = v;
+            no_removido.getPai().setDireita(substituto);
         }
-        v.pai = u.pai;
+        substituto.setPai(no_removido.getPai());
     }
 
     // Retorna o nó de menor valor a partir de um nó
-    private No_RubroNegro minimo(No_RubroNegro no) {
-        while (no.esquerda != nil) {
-            no = no.esquerda;
+    private No_RubroNegro Minimo(No_RubroNegro no) {
+        while (no.getEsquerda() != nil) {
+            no = no.getEsquerda();
         }
         return no;
     }
 
-    // ---------- CORREÇÃO DE VIOLAÇÕES DA REMOÇÃO ----------
-    private void removerFixup(No_RubroNegro x) {
-        while (x != raiz && x.cor == No_RubroNegro.PRETO) {
-            if (x == x.pai.esquerda) {
-                No_RubroNegro irmao = x.pai.direita;
+    // Corrige violações das propriedades rubro-negras após remoção
+    private void Remover_Fixup(No_RubroNegro no) {
+        while (no != raiz && no.getCor() == No_RubroNegro.PRETO) {
+            if (no == no.getPai().getEsquerda()) {
+                No_RubroNegro irmao = no.getPai().getDireita();
 
                 // Caso 1: irmão vermelho → recolore e rotaciona
-                if (irmao.cor == No_RubroNegro.VERMELHO) {
-                    irmao.cor = No_RubroNegro.PRETO;
-                    x.pai.cor = No_RubroNegro.VERMELHO;
-                    rotacaoEsquerda(x.pai);
-                    irmao = x.pai.direita;
+                if (irmao.getCor() == No_RubroNegro.VERMELHO) {
+                    irmao.setCor(No_RubroNegro.PRETO);
+                    no.getPai().setCor(No_RubroNegro.VERMELHO);
+                    Rotacao_Simples_Esquerda(no.getPai());
+                    irmao = no.getPai().getDireita();
                 }
 
                 // Caso 2: irmão preto com filhos pretos → recolore irmão
-                if (irmao.esquerda.cor == No_RubroNegro.PRETO &&
-                        irmao.direita.cor == No_RubroNegro.PRETO) {
-                    irmao.cor = No_RubroNegro.VERMELHO;
-                    x = x.pai; // problema sobe
+                if (irmao.getEsquerda().getCor() == No_RubroNegro.PRETO &&
+                        irmao.getDireita().getCor() == No_RubroNegro.PRETO) {
+                    irmao.setCor(No_RubroNegro.VERMELHO);
+                    no = no.getPai();               // problema sobe
                 } else {
                     // Caso 3: irmão preto, filho direito preto → rotaciona irmão
-                    if (irmao.direita.cor == No_RubroNegro.PRETO) {
-                        irmao.esquerda.cor = No_RubroNegro.PRETO;
-                        irmao.cor = No_RubroNegro.VERMELHO;
-                        rotacaoDireita(irmao);
-                        irmao = x.pai.direita;
+                    if (irmao.getDireita().getCor() == No_RubroNegro.PRETO) {
+                        irmao.getEsquerda().setCor(No_RubroNegro.PRETO);
+                        irmao.setCor(No_RubroNegro.VERMELHO);
+                        Rotacao_Simples_Direita(irmao);
+                        irmao = no.getPai().getDireita();
                     }
                     // Caso 4: irmão preto, filho direito vermelho → rotaciona pai
-                    irmao.cor = x.pai.cor;
-                    x.pai.cor = No_RubroNegro.PRETO;
-                    irmao.direita.cor = No_RubroNegro.PRETO;
-                    rotacaoEsquerda(x.pai);
-                    x = raiz; // encerra o loop
+                    irmao.setCor(no.getPai().getCor());
+                    no.getPai().setCor(No_RubroNegro.PRETO);
+                    irmao.getDireita().setCor(No_RubroNegro.PRETO);
+                    Rotacao_Simples_Esquerda(no.getPai());
+                    no = raiz;                      // encerra o loop
                 }
             } else {
-                // Lógica simétrica (x é filho direito)
-                No_RubroNegro irmao = x.pai.esquerda;
+                // Lógica simétrica (no é filho direito)
+                No_RubroNegro irmao = no.getPai().getEsquerda();
 
-                if (irmao.cor == No_RubroNegro.VERMELHO) {
-                    irmao.cor = No_RubroNegro.PRETO;
-                    x.pai.cor = No_RubroNegro.VERMELHO;
-                    rotacaoDireita(x.pai);
-                    irmao = x.pai.esquerda;
+                if (irmao.getCor() == No_RubroNegro.VERMELHO) {
+                    irmao.setCor(No_RubroNegro.PRETO);
+                    no.getPai().setCor(No_RubroNegro.VERMELHO);
+                    Rotacao_Simples_Direita(no.getPai());
+                    irmao = no.getPai().getEsquerda();
                 }
 
-                if (irmao.direita.cor == No_RubroNegro.PRETO &&
-                        irmao.esquerda.cor == No_RubroNegro.PRETO) {
-                    irmao.cor = No_RubroNegro.VERMELHO;
-                    x = x.pai;
+                if (irmao.getDireita().getCor() == No_RubroNegro.PRETO &&
+                        irmao.getEsquerda().getCor() == No_RubroNegro.PRETO) {
+                    irmao.setCor(No_RubroNegro.VERMELHO);
+                    no = no.getPai();
                 } else {
-                    if (irmao.esquerda.cor == No_RubroNegro.PRETO) {
-                        irmao.direita.cor = No_RubroNegro.PRETO;
-                        irmao.cor = No_RubroNegro.VERMELHO;
-                        rotacaoEsquerda(irmao);
-                        irmao = x.pai.esquerda;
+                    if (irmao.getEsquerda().getCor() == No_RubroNegro.PRETO) {
+                        irmao.getDireita().setCor(No_RubroNegro.PRETO);
+                        irmao.setCor(No_RubroNegro.VERMELHO);
+                        Rotacao_Simples_Esquerda(irmao);
+                        irmao = no.getPai().getEsquerda();
                     }
-                    irmao.cor = x.pai.cor;
-                    x.pai.cor = No_RubroNegro.PRETO;
-                    irmao.esquerda.cor = No_RubroNegro.PRETO;
-                    rotacaoDireita(x.pai);
-                    x = raiz;
+                    irmao.setCor(no.getPai().getCor());
+                    no.getPai().setCor(No_RubroNegro.PRETO);
+                    irmao.getEsquerda().setCor(No_RubroNegro.PRETO);
+                    Rotacao_Simples_Direita(no.getPai());
+                    no = raiz;
                 }
             }
         }
-        x.cor = No_RubroNegro.PRETO; // garante que a raiz (ou x) fique preta
+        no.setCor(No_RubroNegro.PRETO);            // garante que a raiz (ou no) fique preta
     }
+
+    // Métodos públicos — interface de uso da árvore
+    public void remover(int valor)                  { No_RubroNegro no = Buscar(raiz, valor); if (no != nil) Remover(no); }
+    public No_RubroNegro buscar(int valor)          { return Buscar(raiz, valor); }
+    public No_RubroNegro getRaiz()                  { return raiz; }
+    public void setRaiz(No_RubroNegro raiz)         { this.raiz = raiz; }
+    public No_RubroNegro getNil()                   { return nil; }
 }
