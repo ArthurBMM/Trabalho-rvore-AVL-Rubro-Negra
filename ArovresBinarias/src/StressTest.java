@@ -144,6 +144,15 @@ public class StressTest {
         return lista.stream().mapToInt(Integer::intValue).toArray();
     }
 
+    private static void exportarCSV(String caminho, List<String> linhas) throws IOException {
+        BufferedWriter bw = new BufferedWriter(new FileWriter(caminho));
+        for (String linha : linhas) {
+            bw.write(linha + "\n");
+        }
+        bw.close();
+        System.out.println("Resultados exportados para " + caminho);
+    }
+
     // Ponto de entrada
     public static void main(String[] args) throws IOException {
         aquecer();
@@ -151,6 +160,9 @@ public class StressTest {
         System.out.printf("%-15s | %-10s | %-20s | %-20s | %-20s%n",
                 "Estrutura", "Volume", "Insercao (ns)", "Busca (ns)", "Remocao (ns)");
         System.out.println("-".repeat(95));
+
+        List<String> csv = new ArrayList<>();
+        csv.add("Estrutura,Volume,Insercao(ns),Busca(ns),Remocao(ns)");
 
         for (int volume : VOLUMES) {
             int[] dados = lerArquivo("ArovresBinarias/Dados/dados_" + volume + ".txt");
@@ -160,6 +172,7 @@ public class StressTest {
             long busca    = medirBusca(avl, dados);
             long remocao  = medirRemocao(avl, dados);
             imprimirResultados("AVL", volume, insercao, busca, remocao);
+            csv.add("AVL," + volume + "," + insercao + "," + busca + "," + remocao);
 
             // Teste RBT com os mesmos dados
             Arvore_RubroNegra rbt = new Arvore_RubroNegra();
@@ -167,9 +180,10 @@ public class StressTest {
             long buscaRbt    = medirBuscaRBT(rbt, dados);
             long remocaoRbt  = medirRemocaoRBT(rbt, dados);
             imprimirResultados("RBT", volume, insercaoRbt, buscaRbt, remocaoRbt);
+            csv.add("RBT," + volume + "," + insercaoRbt + "," + buscaRbt + "," + remocaoRbt);
 
             System.out.println();
-        }
+        }exportarCSV("ArovresBinarias/Dados/resultados.csv", csv);
     }
 }
 
