@@ -1,4 +1,5 @@
 import ArvoreAVL.Arvore_AVL;
+import Arvore_Rubro_Negro.Arvore_RubroNegra;
 import java.util.Random;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -68,6 +69,34 @@ public class StressTest {
         return fim - inicio;
     }
 
+    private static long medirInsercaoRBT(Arvore_RubroNegra arvore, int[] dados) {
+        long inicio = System.nanoTime();
+        for (int v : dados) {
+            arvore.inserir(v);
+        }
+        long fim = System.nanoTime();
+        return fim - inicio;
+    }
+
+    private static long medirBuscaRBT(Arvore_RubroNegra arvore, int[] dados) {
+        long inicio = System.nanoTime();
+        for (int v : dados) {
+            arvore.buscar(v);
+        }
+        long fim = System.nanoTime();
+        return fim - inicio;
+    }
+
+    private static long medirRemocaoRBT(Arvore_RubroNegra arvore, int[] dados) {
+        int qtdRemover = dados.length / 5;
+        long inicio = System.nanoTime();
+        for (int i = 0; i < qtdRemover; i++) {
+            arvore.remover(dados[i]);
+        }
+        long fim = System.nanoTime();
+        return fim - inicio;
+    }
+
     // Imprime os resultados em formato de tabela comparativa
     private static void imprimirResultados(String nomeEstrutura, int volume,
                                            long tempoInsercao, long tempoBusca,
@@ -125,12 +154,19 @@ public class StressTest {
 
         for (int volume : VOLUMES) {
             int[] dados = lerArquivo("ArovresBinarias/Dados/dados_" + volume + ".txt");
-
+            //Teste AVL
             Arvore_AVL avl = new Arvore_AVL();
             long insercao = medirInsercao(avl, dados);
             long busca    = medirBusca(avl, dados);
             long remocao  = medirRemocao(avl, dados);
             imprimirResultados("AVL", volume, insercao, busca, remocao);
+
+            // Teste RBT com os mesmos dados
+            Arvore_RubroNegra rbt = new Arvore_RubroNegra();
+            long insercaoRbt = medirInsercaoRBT(rbt, dados);
+            long buscaRbt    = medirBuscaRBT(rbt, dados);
+            long remocaoRbt  = medirRemocaoRBT(rbt, dados);
+            imprimirResultados("RBT", volume, insercaoRbt, buscaRbt, remocaoRbt);
 
             System.out.println();
         }
