@@ -3,6 +3,11 @@ import java.util.Random;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
+
 public class StressTest {
     // Configurações globais dos testes
     private static final long SEED = 42L;
@@ -98,31 +103,34 @@ public class StressTest {
         System.out.println("Arquivos gerados com sucesso!");
     }
 
+    // Lê um arquivo txt e retorna um array de inteiros
+    private static int[] lerArquivo(String caminho) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(caminho));
+        List<Integer> lista = new ArrayList<>();
+        String linha;
+        while ((linha = br.readLine()) != null) {
+            lista.add(Integer.parseInt(linha.trim()));
+        }
+        br.close();
+        return lista.stream().mapToInt(Integer::intValue).toArray();
+    }
+
     // Ponto de entrada
     public static void main(String[] args) throws IOException {
         aquecer();
-        gerarArquivos();
+        // gerarArquivos() - como os arquivos ja foram criados retirei da main
         System.out.printf("%-15s | %-10s | %-20s | %-20s | %-20s%n",
                 "Estrutura", "Volume", "Insercao (ns)", "Busca (ns)", "Remocao (ns)");
         System.out.println("-".repeat(95));
 
         for (int volume : VOLUMES) {
-            int[] dadosAleatorios = gerarDadosAleatorios(volume);
-            int[] dadosOrdenados = gerarDadosOrdenados(volume);
+            int[] dados = lerArquivo("ArovresBinarias/Dados/dados_" + volume + ".txt");
 
-            // Teste com dados aleatorios
-            Arvore_AVL avlAleatorio = new Arvore_AVL();
-            long insercao = medirInsercao(avlAleatorio, dadosAleatorios);
-            long busca    = medirBusca(avlAleatorio, dadosAleatorios);
-            long remocao  = medirRemocao(avlAleatorio, dadosAleatorios);
-            imprimirResultados("AVL Aleatorio", volume, insercao, busca, remocao);
-
-            // Testes com dados Ordenados (pior caso)
-            Arvore_AVL avlOrdenado = new Arvore_AVL();
-            long insercaoOrd       = medirInsercao(avlOrdenado, dadosOrdenados);
-            long buscaOrd    = medirBusca(avlOrdenado, dadosOrdenados);
-            long remocaoOrd  = medirRemocao(avlOrdenado, dadosOrdenados);
-            imprimirResultados("AVL Ordenado", volume, insercaoOrd, buscaOrd, remocaoOrd);
+            Arvore_AVL avl = new Arvore_AVL();
+            long insercao = medirInsercao(avl, dados);
+            long busca    = medirBusca(avl, dados);
+            long remocao  = medirRemocao(avl, dados);
+            imprimirResultados("AVL", volume, insercao, busca, remocao);
 
             System.out.println();
         }
