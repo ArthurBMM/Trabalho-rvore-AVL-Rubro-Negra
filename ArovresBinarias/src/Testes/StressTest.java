@@ -1,3 +1,5 @@
+package Testes;
+
 import ArvoreAVL.Arvore_AVL;
 import Arvore_Rubro_Negro.Arvore_RubroNegra;
 import java.util.Random;
