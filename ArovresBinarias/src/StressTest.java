@@ -1,5 +1,8 @@
 import ArvoreAVL.Arvore_AVL;
 import java.util.Random;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 public class StressTest {
     // Configurações globais dos testes
     private static final long SEED = 42L;
@@ -77,9 +80,28 @@ public class StressTest {
         medirRemocao(avl, warmup);
     }
 
+    // Escreve um array de inteiros em um arquivo txt, um número por linha
+    private static void escreverArquivo(String caminho, int[] dados) throws IOException {
+        BufferedWriter bw = new BufferedWriter(new FileWriter(caminho));
+        for (int v : dados) {
+            bw.write(v + "\n");
+        }
+        bw.close();
+    }
+
+    // Gera todos os arquivos de dados para cada volume
+    private static void gerarArquivos() throws IOException {
+        for (int volume : VOLUMES) {
+            int[] aleatorios = gerarDadosAleatorios(volume);
+            escreverArquivo("ArovresBinarias/Dados/dados_" + volume + ".txt", aleatorios);
+        }
+        System.out.println("Arquivos gerados com sucesso!");
+    }
+
     // Ponto de entrada
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         aquecer();
+        gerarArquivos();
         System.out.printf("%-15s | %-10s | %-20s | %-20s | %-20s%n",
                 "Estrutura", "Volume", "Insercao (ns)", "Busca (ns)", "Remocao (ns)");
         System.out.println("-".repeat(95));
