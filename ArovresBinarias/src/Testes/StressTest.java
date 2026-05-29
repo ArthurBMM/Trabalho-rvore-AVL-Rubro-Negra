@@ -191,7 +191,33 @@ public class StressTest {
             csv.add(volume + "," + insercao + "," + insercaoRbt + "," + busca + "," + buscaRbt + "," + remocao + "," + remocaoRbt);
 
             System.out.println();
-        }exportarCSV("ArovresBinarias/Dados/resultados.csv", csv);
+        }
+        // Loop separado para dados ordenados
+        List<String> csvOrdenado = new ArrayList<>();
+        csvOrdenado.add("Volume,AVL_Insercao(ns),RBT_Insercao(ns),AVL_Busca(ns),RBT_Busca(ns),AVL_Remocao(ns),RBT_Remocao(ns)");
+
+        for (int volume : VOLUMES) {
+            int[] dadosOrdenados = gerarDadosOrdenados(volume);
+
+            Arvore_AVL avlOrd = new Arvore_AVL();
+            long insercaoOrd = medirInsercao(avlOrd, dadosOrdenados);
+            long buscaOrd    = medirBusca(avlOrd, dadosOrdenados);
+            long remocaoOrd  = medirRemocao(avlOrd, dadosOrdenados);
+            imprimirResultados("AVL Ordenado", volume, insercaoOrd, buscaOrd, remocaoOrd);
+
+            Arvore_RubroNegra rbtOrd = new Arvore_RubroNegra();
+            long insercaoRbtOrd = medirInsercaoRBT(rbtOrd, dadosOrdenados);
+            long buscaRbtOrd    = medirBuscaRBT(rbtOrd, dadosOrdenados);
+            long remocaoRbtOrd  = medirRemocaoRBT(rbtOrd, dadosOrdenados);
+            imprimirResultados("RBT Ordenado", volume, insercaoRbtOrd, buscaRbtOrd, remocaoRbtOrd);
+
+            csvOrdenado.add(volume + "," + insercaoOrd + "," + insercaoRbtOrd + "," + buscaOrd + "," + buscaRbtOrd + "," + remocaoOrd + "," + remocaoRbtOrd);
+
+            System.out.println();
+        }
+
+        exportarCSV("ArovresBinarias/Dados/resultados_ordenados.csv", csvOrdenado);
+        exportarCSV("ArovresBinarias/Dados/resultados.csv", csv);
     }
 }
 
