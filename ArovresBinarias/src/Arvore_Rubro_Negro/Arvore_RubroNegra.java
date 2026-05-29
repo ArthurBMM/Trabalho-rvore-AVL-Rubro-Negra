@@ -4,6 +4,10 @@ public class Arvore_RubroNegra {
     private No_RubroNegro raiz;
     private final No_RubroNegro nil; // sentinela: representa toda folha NIL (preta)
 
+    private int rotacoesInsercao = 0;
+    private int rotacoesRemocao  = 0;
+    private boolean emInsercao   = false;
+
     public Arvore_RubroNegra() {
         nil = new No_RubroNegro(0);
         nil.setCor(No_RubroNegro.PRETO);
@@ -12,6 +16,7 @@ public class Arvore_RubroNegra {
 
     // Rotação simples à esquerda — filho direito (auxiliar) sobe, nó atual desce para a esquerda
     private void Rotacao_Simples_Esquerda(No_RubroNegro no) {
+        if (emInsercao) rotacoesInsercao++; else rotacoesRemocao++;
         No_RubroNegro auxiliar = no.getDireita();
         no.setDireita(auxiliar.getEsquerda());
         if (auxiliar.getEsquerda() != nil) {
@@ -31,6 +36,7 @@ public class Arvore_RubroNegra {
 
     // Rotação simples à direita — filho esquerdo (auxiliar) sobe, nó atual desce para a direita
     private void Rotacao_Simples_Direita(No_RubroNegro no) {
+        if (emInsercao) rotacoesInsercao++; else rotacoesRemocao++;
         No_RubroNegro auxiliar = no.getEsquerda();
         no.setEsquerda(auxiliar.getDireita());
         if (auxiliar.getDireita() != nil) {
@@ -49,7 +55,7 @@ public class Arvore_RubroNegra {
     }
 
     // Inserção iterativa como BST e correção das violações rubro-negras
-    public void inserir(int valor) {
+    private void inserir_interno(int valor) {
         No_RubroNegro no_novo = new No_RubroNegro(valor);
         no_novo.setEsquerda(nil);
         no_novo.setDireita(nil);
@@ -253,9 +259,14 @@ public class Arvore_RubroNegra {
     }
 
     // Métodos públicos — interface de uso da árvore
-    public void remover(int valor)                  { No_RubroNegro no = Buscar(raiz, valor); if (no != nil) Remover(no); }
+    public void inserir(int valor)                  { emInsercao = true;  inserir_interno(valor); }
+    public void remover(int valor)                  { emInsercao = false; No_RubroNegro no = Buscar(raiz, valor); if (no != nil) Remover(no); }
     public No_RubroNegro buscar(int valor)          { return Buscar(raiz, valor); }
     public No_RubroNegro getRaiz()                  { return raiz; }
     public void setRaiz(No_RubroNegro raiz)         { this.raiz = raiz; }
     public No_RubroNegro getNil()                   { return nil; }
+
+    public int getRotacoesInsercao()                { return rotacoesInsercao; }
+    public int getRotacoesRemocao()                 { return rotacoesRemocao; }
+    public void resetContadores()                   { rotacoesInsercao = 0; rotacoesRemocao = 0; }
 }
