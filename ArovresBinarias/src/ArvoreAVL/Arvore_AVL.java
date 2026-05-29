@@ -47,7 +47,7 @@ public class Arvore_AVL {
 
     // Rotação dupla direita-esquerda — corrige desbalanceamento RL
     // Primeiro rotaciona o filho direito à direita, depois rotaciona o nó à esquerda
-    public No_AVL Rotacao_Dreita_Esquerda(No_AVL no_avl) {
+    public No_AVL Rotacao_Direita_Esquerda(No_AVL no_avl) {
         no_avl.setDireita(Rotacao_Simples_Direita(no_avl.getDireita()));
         return Rotacao_Simples_Esquerda(no_avl);
     }
@@ -73,20 +73,20 @@ public class Arvore_AVL {
 
         // Verifica se o nó ficou desbalanceado
         int fator_balanceamento = no_avl.Calcular_Fator_de_balanceamento(no_avl);
-        int fator_balnceamento_filho;
+        int fator_balanceamento_filho;
 
         // Desbalanceado à esquerda (LL ou LR)
         if (fator_balanceamento > 1) {
-            fator_balnceamento_filho = no_avl.Calcular_Fator_de_balanceamento(no_avl.getEsquerda());
-            if (fator_balnceamento_filho > 0) return Rotacao_Simples_Direita(no_avl);  // caso LL
-            if (fator_balnceamento_filho < 0) return Rotacao_Esquerda_Direita(no_avl); // caso LR
+            fator_balanceamento_filho = no_avl.Calcular_Fator_de_balanceamento(no_avl.getEsquerda());
+            if (fator_balanceamento_filho > 0) return Rotacao_Simples_Direita(no_avl);  // caso LL
+            if (fator_balanceamento_filho < 0) return Rotacao_Esquerda_Direita(no_avl); // caso LR
         }
 
         // Desbalanceado à direita (RR ou RL)
         if (fator_balanceamento < -1) {
-            fator_balnceamento_filho = no_avl.Calcular_Fator_de_balanceamento(no_avl.getDireita());
-            if (fator_balnceamento_filho < 0) return Rotacao_Simples_Esquerda(no_avl);  // caso RR
-            if (fator_balnceamento_filho > 0) return Rotacao_Dreita_Esquerda(no_avl);   // caso RL
+            fator_balanceamento_filho = no_avl.Calcular_Fator_de_balanceamento(no_avl.getDireita());
+            if (fator_balanceamento_filho < 0) return Rotacao_Simples_Esquerda(no_avl);  // caso RR
+            if (fator_balanceamento_filho > 0) return Rotacao_Direita_Esquerda(no_avl);   // caso RL
         }
 
         return no_avl; // nó balanceado, retorna sem alteração
@@ -145,7 +145,7 @@ public class Arvore_AVL {
         if (fb < -1) { // desbalanceado à direita
             if (no_avl.Calcular_Fator_de_balanceamento(no_avl.getDireita()) <= 0)
                 return Rotacao_Simples_Esquerda(no_avl); // caso RR
-            return Rotacao_Dreita_Esquerda(no_avl);      // caso RL
+            return Rotacao_Direita_Esquerda(no_avl);      // caso RL
         }
 
         return no_avl;

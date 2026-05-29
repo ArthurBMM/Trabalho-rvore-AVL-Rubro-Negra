@@ -11,6 +11,9 @@ public class Arvore_RubroNegra {
     public Arvore_RubroNegra() {
         nil = new No_RubroNegro(0);
         nil.setCor(No_RubroNegro.PRETO);
+        nil.setEsquerda(nil);
+        nil.setDireita(nil);
+        nil.setPai(nil);
         raiz = nil;
     }
 
