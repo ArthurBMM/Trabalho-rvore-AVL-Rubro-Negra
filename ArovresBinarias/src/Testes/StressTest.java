@@ -109,11 +109,17 @@ public class StressTest {
 
     // Aquecimento da JVM (não entra na medição)
     private static void aquecer() {
-        Arvore_AVL avl = new Arvore_AVL();
-        int[] warmup = gerarDadosAleatorios(1_000);
-        medirInsercao(avl, warmup);
-        medirBusca(avl, warmup);
-        medirRemocao(avl, warmup);
+        for (int i = 0; i < 3; i++) {
+            Arvore_AVL avl = new Arvore_AVL();
+            Arvore_RubroNegra rbt = new Arvore_RubroNegra();
+            int[] warmup = gerarDadosAleatorios(5_000);
+            medirInsercao(avl, warmup);
+            medirBusca(avl, warmup);
+            medirRemocao(avl, warmup);
+            medirInsercaoRBT(rbt, warmup);
+            medirBuscaRBT(rbt, warmup);
+            medirRemocaoRBT(rbt, warmup);
+        }
     }
 
     // Escreve um array de inteiros em um arquivo txt, um número por linha
@@ -164,7 +170,8 @@ public class StressTest {
         System.out.println("-".repeat(95));
 
         List<String> csv = new ArrayList<>();
-        csv.add("Volume,AVL_Insercao(ns),RBT_Insercao(ns),AVL_Busca(ns),RBT_Busca(ns),AVL_Remocao(ns),RBT_Remocao(ns)");
+        csv.add("Volume,AVL_Insercao(ns),RBT_Insercao(ns),AVL_Busca(ns),RBT_Busca(ns),AVL_Remocao(ns),RBT_Remocao(ns),"
+                                                    + "AVL_RotInsercao,RBT_RotInsercao,AVL_RotRemocao,RBT_RotRemocao");
 
         for (int volume : VOLUMES) {
             int[] dados = lerArquivo("ArovresBinarias/Dados/dados_" + volume + ".txt");
@@ -173,6 +180,8 @@ public class StressTest {
             long insercao = medirInsercao(avl, dados);
             long busca    = medirBusca(avl, dados);
             long remocao  = medirRemocao(avl, dados);
+            long rotInsercaoAvl = avl.getRotacoesInsercao();
+            long rotRemocaoAvl  = avl.getRotacoesRemocao();
             imprimirResultados("AVL", volume, insercao, busca, remocao);
 
             // Teste RBT com os mesmos dados
@@ -180,12 +189,49 @@ public class StressTest {
             long insercaoRbt = medirInsercaoRBT(rbt, dados);
             long buscaRbt    = medirBuscaRBT(rbt, dados);
             long remocaoRbt  = medirRemocaoRBT(rbt, dados);
+            long rotInsercaoRbt = rbt.getRotacoesInsercao();
+            long rotRemocaoRbt = rbt.getRotacoesRemocao();
             imprimirResultados("RBT", volume, insercaoRbt, buscaRbt, remocaoRbt);
 
-            csv.add(volume + "," + insercao + "," + insercaoRbt + "," + busca + "," + buscaRbt + "," + remocao + "," + remocaoRbt);
+            csv.add(volume + "," + insercao + "," + insercaoRbt + "," + busca + "," + buscaRbt + "," + remocao + ","
+                              + remocaoRbt + "," + rotInsercaoAvl + "," + rotInsercaoRbt + "," + rotRemocaoAvl + ","
+                                                                                                   + rotRemocaoRbt);
 
             System.out.println();
-        }exportarCSV("ArovresBinarias/Dados/resultados.csv", csv);
+        }
+        // Loop separado para dados ordenados
+        List<String> csvOrdenado = new ArrayList<>();
+        csvOrdenado.add("Volume,AVL_Insercao(ns),RBT_Insercao(ns),AVL_Busca(ns),RBT_Busca(ns),AVL_Remocao(ns)," +
+                                  "RBT_Remocao(ns),AVL_RotInsercao,RBT_RotInsercao,AVL_RotRemocao,RBT_RotRemocao");
+
+        for (int volume : VOLUMES) {
+            int[] dadosOrdenados = gerarDadosOrdenados(volume);
+
+            Arvore_AVL avlOrd = new Arvore_AVL();
+            long insercaoOrd = medirInsercao(avlOrd, dadosOrdenados);
+            long buscaOrd    = medirBusca(avlOrd, dadosOrdenados);
+            long remocaoOrd  = medirRemocao(avlOrd, dadosOrdenados);
+            long rotInsercaoAvlOrd = avlOrd.getRotacoesInsercao();
+            long rotRemocaoAvlOrd = avlOrd.getRotacoesRemocao();
+            imprimirResultados("AVL Ordenado", volume, insercaoOrd, buscaOrd, remocaoOrd);
+
+            Arvore_RubroNegra rbtOrd = new Arvore_RubroNegra();
+            long insercaoRbtOrd = medirInsercaoRBT(rbtOrd, dadosOrdenados);
+            long buscaRbtOrd    = medirBuscaRBT(rbtOrd, dadosOrdenados);
+            long remocaoRbtOrd  = medirRemocaoRBT(rbtOrd, dadosOrdenados);
+            long rotInsercaoRbtOrd = rbtOrd.getRotacoesInsercao();
+            long rotRemocaoRbtOrd = rbtOrd.getRotacoesRemocao();
+            imprimirResultados("RBT Ordenado", volume, insercaoRbtOrd, buscaRbtOrd, remocaoRbtOrd);
+
+            csvOrdenado.add(volume + "," + insercaoOrd + "," + insercaoRbtOrd + "," + buscaOrd + "," + buscaRbtOrd +
+                    "," + remocaoOrd + "," + remocaoRbtOrd + "," + rotInsercaoAvlOrd + "," + rotInsercaoRbtOrd + ","
+                                                                        + rotRemocaoAvlOrd + "," + rotRemocaoRbtOrd);
+
+            System.out.println();
+        }
+
+        exportarCSV("ArovresBinarias/Dados/resultados_ordenados.csv", csvOrdenado);
+        exportarCSV("ArovresBinarias/Dados/resultados.csv", csv);
     }
 }
 
