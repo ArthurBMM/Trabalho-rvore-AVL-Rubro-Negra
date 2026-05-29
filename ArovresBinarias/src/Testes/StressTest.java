@@ -109,11 +109,17 @@ public class StressTest {
 
     // Aquecimento da JVM (não entra na medição)
     private static void aquecer() {
-        Arvore_AVL avl = new Arvore_AVL();
-        int[] warmup = gerarDadosAleatorios(1_000);
-        medirInsercao(avl, warmup);
-        medirBusca(avl, warmup);
-        medirRemocao(avl, warmup);
+        for (int i = 0; i < 3; i++) {
+            Arvore_AVL avl = new Arvore_AVL();
+            Arvore_RubroNegra rbt = new Arvore_RubroNegra();
+            int[] warmup = gerarDadosAleatorios(5_000);
+            medirInsercao(avl, warmup);
+            medirBusca(avl, warmup);
+            medirRemocao(avl, warmup);
+            medirInsercaoRBT(rbt, warmup);
+            medirBuscaRBT(rbt, warmup);
+            medirRemocaoRBT(rbt, warmup);
+        }
     }
 
     // Escreve um array de inteiros em um arquivo txt, um número por linha
