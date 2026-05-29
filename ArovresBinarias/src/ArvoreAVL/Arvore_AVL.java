@@ -3,6 +3,10 @@ package ArvoreAVL;
 public class Arvore_AVL {
     private No_AVL raiz; // Raiz da árvore, ponto de entrada para todas as operações
 
+    private int rotacoesInsercao = 0;
+    private int rotacoesRemocao  = 0;
+    private boolean emInsercao   = false;
+
     // Recalcula e atualiza a altura de um nó com base na altura dos seus filhos
     public void atualizarAltura(No_AVL no_avl) {
         int alturaEsquerda = no_avl.Obter_altura(no_avl.getEsquerda());
@@ -13,6 +17,7 @@ public class Arvore_AVL {
     // Rotação simples à direita — corrige desbalanceamento LL
     // O filho esquerdo (auxiliar) sobe e o nó atual desce para a direita
     public No_AVL Rotacao_Simples_Direita(No_AVL no_avl) {
+        if (emInsercao) rotacoesInsercao++; else rotacoesRemocao++;
         No_AVL auxiliar = no_avl.getEsquerda();
         no_avl.setEsquerda(no_avl.getEsquerda().getDireita()); // filho direito de auxiliar vai pra esquerda de no_avl
         auxiliar.setDireita(no_avl);                           // no_avl desce pra direita de auxiliar
@@ -24,6 +29,7 @@ public class Arvore_AVL {
     // Rotação simples à esquerda — corrige desbalanceamento RR
     // O filho direito (auxiliar) sobe e o nó atual desce para a esquerda
     public No_AVL Rotacao_Simples_Esquerda(No_AVL no_avl) {
+        if (emInsercao) rotacoesInsercao++; else rotacoesRemocao++;
         No_AVL auxiliar = no_avl.getDireita();
         no_avl.setDireita(no_avl.getDireita().getEsquerda()); // filho esquerdo de auxiliar vai pra direita de no_avl
         auxiliar.setEsquerda(no_avl);                         // no_avl desce pra esquerda de auxiliar
@@ -146,9 +152,13 @@ public class Arvore_AVL {
     }
 
     // Métodos públicos — interface de uso da árvore
-    public void inserir(int valor)        { raiz = Inserir(raiz, valor); }
-    public void remover(int valor)        { raiz = Remover(raiz, valor); }
+    public void inserir(int valor)        { emInsercao = true;  raiz = Inserir(raiz, valor); }
+    public void remover(int valor)        { emInsercao = false; raiz = Remover(raiz, valor); }
     public No_AVL buscar(int valor)       { return Buscar(raiz, valor); }
     public No_AVL getRaiz()               { return raiz; }
     public void setRaiz(No_AVL raiz)      { this.raiz = raiz; }
+
+    public int getRotacoesInsercao()      { return rotacoesInsercao; }
+    public int getRotacoesRemocao()       { return rotacoesRemocao; }
+    public void resetContadores()         { rotacoesInsercao = 0; rotacoesRemocao = 0; }
 }
