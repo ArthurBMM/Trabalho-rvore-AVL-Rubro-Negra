@@ -170,7 +170,7 @@ public class StressTest {
         System.out.println("-".repeat(95));
 
         List<String> csv = new ArrayList<>();
-        csv.add("Volume,AVL_Insercao(ns),RBT_Insercao(ns),AVL_Busca(ns),RBT_Busca(ns),AVL_Remocao(ns),RBT_Remocao(ns)");
+        csv.add("Volume,AVL_Insercao(ns),RBT_Insercao(ns),AVL_Busca(ns),RBT_Busca(ns),AVL_Remocao(ns),RBT_Remocao(ns),AVL_RotInsercao,RBT_RotInsercao,AVL_RotRemocao,RBT_RotRemocao");
 
         for (int volume : VOLUMES) {
             int[] dados = lerArquivo("ArovresBinarias/Dados/dados_" + volume + ".txt");
@@ -179,6 +179,8 @@ public class StressTest {
             long insercao = medirInsercao(avl, dados);
             long busca    = medirBusca(avl, dados);
             long remocao  = medirRemocao(avl, dados);
+            long rotInsercaoAvl = avl.getRotacoesInsercao();
+            long rotRemocaoAvl  = avl.getRotacoesRemocao();
             imprimirResultados("AVL", volume, insercao, busca, remocao);
 
             // Teste RBT com os mesmos dados
@@ -186,9 +188,11 @@ public class StressTest {
             long insercaoRbt = medirInsercaoRBT(rbt, dados);
             long buscaRbt    = medirBuscaRBT(rbt, dados);
             long remocaoRbt  = medirRemocaoRBT(rbt, dados);
+            long rotInsercaoRbt = rbt.getRotacoesInsercao()
+            long rotRemocaoRbt = rbt.getRotacoesRemocao()
             imprimirResultados("RBT", volume, insercaoRbt, buscaRbt, remocaoRbt);
 
-            csv.add(volume + "," + insercao + "," + insercaoRbt + "," + busca + "," + buscaRbt + "," + remocao + "," + remocaoRbt);
+            csv.add(volume + "," + insercao + "," + insercaoRbt + "," + busca + "," + buscaRbt + "," + remocao + "," + remocaoRbt + "," + rotInsercaoAvl + "," + rotInsercaoRbt + "," + rotRemocaoAvl + "," + rotRemocaoRbt);
 
             System.out.println();
         }
